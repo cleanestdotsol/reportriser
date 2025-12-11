@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReportRiser - Automated SEO Reports for Agencies</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo">📊 ReportRiser</div>
+                <div class="nav-links">
+                    <a href="#features">Features</a>
+                    <a href="#pricing">Pricing</a>
+                    <button class="btn-secondary" onclick="showLoginModal()">Login</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="container">
+            <h1>SEO Reports That Prove ROI<br>Starting at $39/mo</h1>
+            <p class="hero-subtitle">See Organic Traffic → $Revenue in 60 Seconds</p>
+            <div style="margin: 2rem 0; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <a href="/demo" class="btn-primary" style="text-decoration: none;">View Demo Report</a>
+                <a href="/audit" class="btn-secondary" style="text-decoration: none; background: white; color: #667eea;">Free Audit Tool</a>
+            </div>
+            <p class="hero-note">vs. $139 SEMrush bloat • Free tier: 1 report/month</p>
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <div class="container">
+            <h2>Everything You Need to Impress Clients</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">💰</div>
+                    <h3>ROI Tracking</h3>
+                    <p>Track organic visitors → conversions → revenue. Prove SEO value to clients.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3>Real-Time Data</h3>
+                    <p>Pull live data from Google Analytics, Search Console & PageSpeed Insights</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎨</div>
+                    <h3>Beautiful Reports</h3>
+                    <p>Professional PDFs with charts, tables, and your brand colors</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Lightning Fast</h3>
+                    <p>Generate comprehensive reports in under 10 seconds</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📧</div>
+                    <h3>Email Scheduling</h3>
+                    <p>Automatically send weekly or monthly reports to clients</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🏷️</div>
+                    <h3>White-Label</h3>
+                    <p>Remove all ReportRiser branding (Enterprise plan)</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔌</div>
+                    <h3>API Access</h3>
+                    <p>Integrate reports into your own tools & workflows</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="pricing" class="pricing">
+        <div class="container">
+            <h2>Simple, Transparent Pricing</h2>
+            <div class="pricing-toggle">
+                <button class="active" data-period="monthly">Monthly</button>
+                <button data-period="yearly">Yearly <span class="savings">Save 20%</span></button>
+            </div>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <div class="tier-badge">Starter</div>
+                    <div class="price">
+                        <span class="amount monthly-price">$39</span>
+                        <span class="amount yearly-price" style="display:none;">$29</span>
+                        <span class="period">/month</span>
+                    </div>
+                    <ul class="features-list">
+                        <li>✓ 3 sites</li>
+                        <li>✓ 50 reports/month</li>
+                        <li>✓ PDF downloads</li>
+                        <li>✓ 1 user</li>
+                        <li>✗ Email scheduling</li>
+                        <li>✗ White-label</li>
+                    </ul>
+                    <button class="btn-outline" onclick="showLoginModal()">Get Started</button>
+                </div>
+                
+                <div class="pricing-card featured">
+                    <div class="popular-badge">Most Popular</div>
+                    <div class="tier-badge">Premium</div>
+                    <div class="price">
+                        <span class="amount monthly-price">$89</span>
+                        <span class="amount yearly-price" style="display:none;">$69</span>
+                        <span class="period">/month</span>
+                    </div>
+                    <ul class="features-list">
+                        <li>✓ 20 sites</li>
+                        <li>✓ Unlimited reports</li>
+                        <li>✓ PDF downloads</li>
+                        <li>✓ Email scheduling</li>
+                        <li>✓ 3 users</li>
+                        <li>✗ White-label</li>
+                    </ul>
+                    <button class="btn-primary" onclick="showLoginModal()">Get Started</button>
+                </div>
+                
+                <div class="pricing-card">
+                    <div class="tier-badge">Enterprise</div>
+                    <div class="price">
+                        <span class="amount monthly-price">$249</span>
+                        <span class="amount yearly-price" style="display:none;">$199</span>
+                        <span class="period">/month</span>
+                    </div>
+                    <ul class="features-list">
+                        <li>✓ Unlimited sites</li>
+                        <li>✓ Unlimited reports</li>
+                        <li>✓ White-label reports</li>
+                        <li>✓ Email scheduling</li>
+                        <li>✓ API access</li>
+                        <li>✓ Unlimited users</li>
+                    </ul>
+                    <button class="btn-outline" onclick="showLoginModal()">Get Started</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer style="background: #1e293b; color: white; padding: 2rem; text-align: center;">
+        <p>© 2025 ReportRiser • <a href="https://reportriser.com" style="color: #60a5fa;">reportriser.com</a></p>
+        <p style="margin-top: 0.5rem; opacity: 0.7; font-size: 0.875rem;">
+            <a href="/audit" style="color: white; margin: 0 1rem;">Free Audit</a> | 
+            <a href="/demo" style="color: white; margin: 0 1rem;">Demo</a> | 
+            <a href="/test-login" style="color: white; margin: 0 1rem;">Login</a>
+        </p>
+    </footer>
+
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeLoginModal()">&times;</span>
+            <h2>Login to ReportRiser</h2>
+            <p>We'll send you a magic link to log in instantly</p>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <input type="email" name="email" placeholder="your@email.com" required>
+                <button type="submit" class="btn-primary">Send Magic Link</button>
+            </form>
+            <div id="loginMessage" style="margin-top: 15px; display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        function showLoginModal() {
+            document.getElementById('loginModal').style.display = 'flex';
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').style.display = 'none';
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                const messageDiv = document.getElementById('loginMessage');
+                messageDiv.style.display = 'block';
+                messageDiv.className = 'success-message';
+                messageDiv.textContent = '✓ Check your email for the login link!';
+                
+                e.target.reset();
+            } catch (error) {
+                const messageDiv = document.getElementById('loginMessage');
+                messageDiv.style.display = 'block';
+                messageDiv.className = 'error-message';
+                messageDiv.textContent = 'Error sending email. Please try again.';
+            }
+        }
+
+        // Pricing toggle
+        document.querySelectorAll('.pricing-toggle button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.pricing-toggle button').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                const period = this.dataset.period;
+                
+                if (period === 'yearly') {
+                    document.querySelectorAll('.monthly-price').forEach(el => el.style.display = 'none');
+                    document.querySelectorAll('.yearly-price').forEach(el => el.style.display = 'inline');
+                } else {
+                    document.querySelectorAll('.monthly-price').forEach(el => el.style.display = 'inline');
+                    document.querySelectorAll('.yearly-price').forEach(el => el.style.display = 'none');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

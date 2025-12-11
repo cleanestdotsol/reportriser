@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - ReportRiser</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo">📊 ReportRiser</div>
+                <div class="nav-links">
+                    <span class="tier-badge-nav">{{ user.tier.upper() }}</span>
+                    <a href="/logout">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <div>
+                <h1>Welcome back, {{ user.email }}</h1>
+                <p>Generate and manage your SEO reports</p>
+            </div>
+            {% if user.tier != 'enterprise' %}
+            <button class="btn-primary" onclick="window.location.href='#pricing'">Upgrade Plan</button>
+            {% endif %}
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Reports This Month</div>
+                <div class="stat-value">{{ user.reports_used }} / {{ limits.reports_per_month if limits.reports_per_month != 999999 else '∞' }}</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ (user.reports_used / limits.reports_per_month * 100) if limits.reports_per_month != 999999 else 0 }}%"></div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-label">Sites Connected</div>
+                <div class="stat-value">{{ user.sites_used }} / {{ limits.sites if limits.sites != 999999 else '∞' }}</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-label">Current Plan</div>
+                <div class="stat-value">{{ user.tier.capitalize() }}</div>
+                {% if user.stripe_customer_id %}
+                <a href="https://billing.stripe.com/p/login/test_customer" class="manage-link">Manage Subscription</a>
+                {% endif %}
+            </div>
+
+            <div class="stat-card" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white;">
+                <div class="stat-label" style="color: rgba(255,255,255,0.9);">Monthly Organic ROI</div>
+                <div class="stat-value" style="color: white;">${{ "{:,}".format(total_roi) if total_roi else '0' }}</div>
+                <div style="margin-top: 0.5rem; font-size: 0.875rem; opacity: 0.9;">
+                    From {{ user.reports_used }} report{{ 's' if user.reports_used != 1 else '' }}
+                </div>
+        </div>
+
+        <div class="action-section" style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+    <h2 style="margin-bottom: 1.5rem;">📊 Generate New Report</h2>
+    <form id="generateForm" onsubmit="generateReport(event)">
+        <div style="margin-bottom: 1rem;">
+            <label style="display: block; font-size: 0.875rem; color: #64748b; margin-bottom: 0.5rem; font-weight: 500;">Website URL</label>
+            <input type="url" name="site_url" placeholder="https://example.com" required style="width: 400px; max-width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem; box-sizing: border-box;">
+        </div>
+        <div style="margin-bottom: 1rem;">
+            <label style="display: block; font-size: 0.875rem; color: #64748b; margin-bottom: 0.5rem; font-weight: 500;">Avg Order Value</label>
+            <input type="number" name="avg_order_value" placeholder="100" value="100" min="1" style="width: 400px; max-width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem; box-sizing: border-box;">
+        </div>
+        <button type="submit" class="btn-primary" style="width: 400px; max-width: 100%; padding: 14px; box-sizing: border-box;">Generate Report</button>
+    </form>
+    <p class="help-text" style="margin: 1rem 0; max-width: 400px;">💡 Tip: Higher order values show greater ROI impact in reports</p>
+    <button class="btn-secondary" onclick="window.location.href='/google-auth'" style="width: 400px; max-width: 100%; box-sizing: border-box;">🔗 Connect Google Analytics</button>
+</div>
+
+        <div class="reports-section">
+            <h2>Recent Reports</h2>
+            {% if reports %}
+            <div class="reports-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Site</th>
+                            <th>Traffic</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for report in reports %}
+                        <tr>
+                            <td>{{ report.site_url }}</td>
+                            <td>{{ report.traffic|int|string + ' users' if report.traffic else 'N/A' }}</td>
+                            <td>{{ report.created_at[:10] }}</td>
+                            <td>
+                                <a href="/download-report/{{ report.id }}" class="btn-small">Download PDF</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>No reports yet. Generate your first one above!</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <div id="upgradeModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <span class="close" onclick="closeUpgradeModal()">&times;</span>
+                <h2>Upgrade Required</h2>
+                <p>You've reached your plan limit. Upgrade to continue generating reports!</p>
+                <div class="upgrade-options">
+                    <div class="upgrade-card">
+                        <h3>Premium</h3>
+                        <p class="price">$89/mo</p>
+                        <ul>
+                            <li>Unlimited reports</li>
+                            <li>20 sites</li>
+                            <li>Email scheduling</li>
+                        </ul>
+                        <button class="btn-primary" onclick="checkout('premium_monthly')">Upgrade Now</button>
+                    </div>
+                    <div class="upgrade-card">
+                        <h3>Enterprise</h3>
+                        <p class="price">$249/mo</p>
+                        <ul>
+                            <li>Everything unlimited</li>
+                            <li>White-label reports</li>
+                            <li>API access</li>
+                        </ul>
+                        <button class="btn-primary" onclick="checkout('enterprise_monthly')">Upgrade Now</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function generateReport(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Generating...';
+            
+            try {
+                const response = await fetch('/generate-report', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert('Report generated successfully! Downloading...');
+                    window.location.href = '/download-report/' + data.report_id;
+                    setTimeout(() => window.location.reload(), 1000);
+                } else if (data.upgrade_needed) {
+                    document.getElementById('upgradeModal').style.display = 'flex';
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Error generating report. Please try again.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Generate Report';
+            }
+        }
+
+        function closeUpgradeModal() {
+            document.getElementById('upgradeModal').style.display = 'none';
+        }
+
+        async function checkout(priceKey) {
+            const formData = new FormData();
+            formData.append('price_key', priceKey);
+            
+            try {
+                const response = await fetch('/checkout', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.url) {
+                    window.location.href = data.url;
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Error processing checkout. Please try again.');
+            }
+        }
+
+        // Show upgrade modal if needed
+        {% if should_show_upgrade %}
+        document.getElementById('upgradeModal').style.display = 'flex';
+        {% endif %}
+
+        // Show success message if payment completed
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('payment') === 'success') {
+            alert('Payment successful! Your account has been upgraded.');
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+
+        if (urlParams.get('connected') === 'true') {
+            alert('Google account connected successfully!');
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    </script>
+</body>
+</html>

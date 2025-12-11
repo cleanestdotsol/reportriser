@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free SEO Audit Tool - ReportRiser</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .audit-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+        .audit-form {
+            max-width: 600px;
+            margin: -2rem auto 3rem;
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+        .audit-form input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .metric-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 4px solid #3b82f6;
+        }
+        .metric-card.good { border-left-color: #10b981; }
+        .metric-card.warning { border-left-color: #f59e0b; }
+        .metric-card.poor { border-left-color: #ef4444; }
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 0.5rem 0;
+        }
+        .metric-label {
+            color: #64748b;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .cta-box {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: white;
+            padding: 3rem 2rem;
+            border-radius: 12px;
+            text-align: center;
+            margin: 3rem 0;
+        }
+        .share-box {
+            background: #f1f5f9;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <a href="/" class="logo" style="text-decoration: none;">📊 ReportRiser</a>
+                <div class="nav-links">
+                    <a href="/">Home</a>
+                    <a href="/demo">Demo</a>
+                    <a href="/test-login">Dashboard</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="audit-hero">
+        <h1>Free SEO Audit Tool</h1>
+        <p style="font-size: 1.2rem; opacity: 0.9; margin-top: 1rem;">
+            Instant analysis of any website — no signup required
+        </p>
+    </section>
+
+    <div class="container">
+        <div class="audit-form">
+            <form method="GET" action="/audit">
+                <input type="url" name="url" placeholder="https://example.com" 
+                       value="{{ audit_data.url if audit_data else '' }}" required>
+                <button type="submit" class="btn-primary" style="width: 100%;">
+                    🔍 Analyze Website
+                </button>
+            </form>
+            <p style="text-align: center; color: #64748b; font-size: 0.875rem; margin-top: 1rem;">
+                Enter any URL to check Core Web Vitals, SEO basics, and performance
+            </p>
+        </div>
+
+        {% if audit_data and not audit_data.error %}
+        <div style="max-width: 900px; margin: 0 auto;">
+            <h2 style="text-align: center; margin-bottom: 2rem;">
+                Results for <span style="color: #3b82f6;">{{ audit_data.url }}</span>
+            </h2>
+            <p style="text-align: center; color: #64748b; margin-bottom: 3rem;">
+                Analyzed on {{ audit_data.timestamp }}
+            </p>
+
+            <!-- Core Web Vitals -->
+            <h3 style="margin-bottom: 1.5rem;">⚡ Core Web Vitals</h3>
+            <div class="results-grid">
+                <div class="metric-card {{ audit_data.cwv.metrics.lcp.status }}">
+                    <div class="metric-label">{{ audit_data.cwv.metrics.lcp.icon }} Largest Contentful Paint</div>
+                    <div class="metric-value">{{ audit_data.cwv.metrics.lcp.value }}s</div>
+                    <p style="font-size: 0.875rem; color: #64748b; margin-top: 0.5rem;">
+                        {{ audit_data.cwv.metrics.lcp.recommendation }}
+                    </p>
+                </div>
+
+                <div class="metric-card {{ audit_data.cwv.metrics.fid.status }}">
+                    <div class="metric-label">{{ audit_data.cwv.metrics.fid.icon }} First Input Delay</div>
+                    <div class="metric-value">{{ audit_data.cwv.metrics.fid.value }}ms</div>
+                    <p style="font-size: 0.875rem; color: #64748b; margin-top: 0.5rem;">
+                        {{ audit_data.cwv.metrics.fid.recommendation }}
+                    </p>
+                </div>
+
+                <div class="metric-card {{ audit_data.cwv.metrics.cls.status }}">
+                    <div class="metric-label">{{ audit_data.cwv.metrics.cls.icon }} Cumulative Layout Shift</div>
+                    <div class="metric-value">{{ audit_data.cwv.metrics.cls.value }}</div>
+                    <p style="font-size: 0.875rem; color: #64748b; margin-top: 0.5rem;">
+                        {{ audit_data.cwv.metrics.cls.recommendation }}
+                    </p>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-label">📊 Overall CWV Score</div>
+                    <div class="metric-value">{{ audit_data.cwv.score }}/100</div>
+                    <p style="font-size: 0.875rem; color: #64748b; margin-top: 0.5rem;">
+                        {{ audit_data.cwv.overall_recommendation }}
+                    </p>
+                </div>
+            </div>
+
+            {% if audit_data.seo %}
+            <!-- On-Page SEO -->
+            <h3 style="margin: 3rem 0 1.5rem;">🔍 On-Page SEO</h3>
+            <div class="results-grid">
+                <div class="metric-card {{ audit_data.seo.title_status }}">
+                    <div class="metric-label">Title Tag Length</div>
+                    <div class="metric-value">{{ audit_data.seo.title_length }}</div>
+                    <p style="font-size: 0.875rem; color: #64748b; margin-top: 0.5rem;">
+                        {% if audit_data.seo.title_status == 'good' %}
+                        ✅ Optimal length (30-60 characters)
+                        {% else %}
+                        ⚠️ Should be 30-60 characters
+                        {% endif %}
+                    </p>
+                </div>
+
+                <div class="metric-card {{ audit_data.seo.meta_desc_status }}">
+                    <div class="metric-label">Meta Description</div>
+                    <div class="metric-value">{{ audit_data.seo.meta_desc_length }}</div>
+                    <p style="font-size: 0.875rem; color: #64748b; margin-top: 0.5rem;">
+                        {% if audit_data.seo.meta_desc_status == 'good' %}
+                        ✅ Optimal length (120-160 characters)
+                        {% else %}
+                        ⚠️ Should be 120-160 characters
+                        {% endif %}
+                    </p>
+                </div>
+
+                <div class="metric-card {{ audit_data.seo.h1_status }}">
+                    <div class="metric-label">H1 Tags</div>
+                    <div class="metric-value">{{ audit_data.seo.h1_count }}</div>
+                    <p style="font-size: 0.875rem; color: #64748b; margin-top: 0.5rem;">
+                        {% if audit_data.seo.h1_count == 1 %}
+                        ✅ Perfect — one H1 per page
+                        {% else %}
+                        ⚠️ Should have exactly 1 H1
+                        {% endif %}
+                    </p>
+                </div>
+
+                <div class="metric-card {{ audit_data.seo.alt_status }}">
+                    <div class="metric-label">Missing Alt Tags</div>
+                    <div class="metric-value">{{ audit_data.seo.missing_alt_percent }}%</div>
+                    <p style="font-size: 0.875rem; color: #64748b; margin-top: 0.5rem;">
+                        {% if audit_data.seo.missing_alt_percent < 10 %}
+                        ✅ Good image accessibility
+                        {% else %}
+                        ⚠️ Add alt text to images
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Share Results -->
+            <div class="share-box">
+                <h4>📤 Share This Audit</h4>
+                <input type="text" readonly value="https://reportriser.com/audit?url={{ audit_data.url }}" 
+                       onclick="this.select()" 
+                       style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; margin-top: 0.5rem;">
+            </div>
+
+            <!-- CTA -->
+            <div class="cta-box">
+                <h2 style="margin-bottom: 1rem;">Want the Full ROI Report?</h2>
+                <p style="font-size: 1.1rem; opacity: 0.9; margin-bottom: 2rem;">
+                    See organic traffic, conversions, $revenue, keyword rankings, and 30-day trends
+                </p>
+                <a href="/test-login" class="btn-primary" style="display: inline-block; padding: 14px 32px; text-decoration: none; font-size: 1.1rem;">
+                    Get Full Report — Start Free Trial
+                </a>
+                <p style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.8;">
+                    No credit card required • 1 free report
+                </p>
+            </div>
+        </div>
+        {% elif audit_data and audit_data.error %}
+        <div style="max-width: 600px; margin: 3rem auto; padding: 2rem; background: #fef2f2; border-left: 4px solid #ef4444; border-radius: 8px;">
+            <h3 style="color: #dc2626;">❌ Error Analyzing Site</h3>
+            <p style="color: #64748b;">{{ audit_data.error }}</p>
+            <p style="margin-top: 1rem; color: #64748b;">Make sure the URL is correct and the site is accessible.</p>
+        </div>
+        {% else %}
+        <div style="max-width: 800px; margin: 3rem auto; text-align: center;">
+            <h3 style="margin-bottom: 2rem;">What You'll Get</h3>
+            <div class="results-grid">
+                <div class="metric-card">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚡</div>
+                    <h4>Core Web Vitals</h4>
+                    <p style="font-size: 0.875rem; color: #64748b;">LCP, FID, CLS with fix recommendations</p>
+                </div>
+                <div class="metric-card">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔍</div>
+                    <h4>On-Page SEO</h4>
+                    <p style="font-size: 0.875rem; color: #64748b;">Title, meta, H1 tags, alt text analysis</p>
+                </div>
+                <div class="metric-card">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📊</div>
+                    <h4>Performance</h4>
+                    <p style="font-size: 0.875rem; color: #64748b;">Load speed and accessibility scores</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <footer style="background: #1e293b; color: white; padding: 2rem; text-align: center; margin-top: 4rem;">
+        <p>© 2025 ReportRiser • <a href="https://reportriser.com" style="color: #60a5fa;">reportriser.com</a></p>
+        <p style="margin-top: 0.5rem; opacity: 0.7; font-size: 0.875rem;">
+            <a href="/demo" style="color: white; margin: 0 1rem;">Demo</a> | 
+            <a href="/test-login" style="color: white; margin: 0 1rem;">Login</a>
+        </p>
+    </footer>
+</body>
+</html>

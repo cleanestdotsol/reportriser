@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Report - ReportRiser</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .demo-banner {
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            font-weight: bold;
+        }
+        .demo-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+        .report-container {
+            max-width: 900px;
+            margin: -3rem auto 2rem;
+            background: white;
+            padding: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+        }
+        .metric-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .big-metric {
+            text-align: center;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 12px;
+            border: 2px solid #cbd5e1;
+        }
+        .big-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #1e293b;
+            margin: 0.5rem 0;
+        }
+        .big-label {
+            color: #64748b;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .roi-highlight {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            margin: 2rem 0;
+        }
+        .keyword-list {
+            list-style: none;
+            padding: 0;
+        }
+        .keyword-item {
+            padding: 1rem;
+            background: #f8fafc;
+            border-left: 4px solid #3b82f6;
+            margin-bottom: 0.75rem;
+            border-radius: 6px;
+        }
+        .cta-section {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: white;
+            padding: 3rem 2rem;
+            border-radius: 12px;
+            text-align: center;
+            margin: 3rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-banner">
+        🎭 DEMO MODE — This is example data for {{ demo.site }}
+    </div>
+
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <a href="/" class="logo" style="text-decoration: none;">📊 ReportRiser</a>
+                <div class="nav-links">
+                    <a href="/">Home</a>
+                    <a href="/audit">Free Audit</a>
+                    <a href="/test-login">Get Started</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="demo-hero">
+        <h1>Premium SEO Report</h1>
+        <p style="font-size: 1.3rem; opacity: 0.9; margin-top: 1rem;">
+            See how ReportRiser tracks organic traffic → $revenue
+        </p>
+    </section>
+
+    <div class="container">
+        <div class="report-container">
+            <h2 style="text-align: center; margin-bottom: 1rem;">{{ demo.site }}</h2>
+            <p style="text-align: center; color: #64748b; margin-bottom: 3rem;">
+                Performance Report • December 2024
+            </p>
+
+            <!-- ROI Highlight -->
+            <div class="roi-highlight">
+                <div style="font-size: 0.875rem; opacity: 0.9; margin-bottom: 0.5rem;">MONTHLY ORGANIC ROI</div>
+                <div style="font-size: 3.5rem; font-weight: bold; margin-bottom: 0.5rem;">
+                    ${{ "{:,}".format(demo.roi) }}
+                </div>
+                <div style="font-size: 1.2rem; opacity: 0.9;">
+                    {{ demo.growth }} vs last month
+                </div>
+            </div>
+
+            <!-- Key Metrics -->
+            <div class="metric-row">
+                <div class="big-metric">
+                    <div class="big-label">Organic Visitors</div>
+                    <div class="big-number">{{ "{:,}".format(demo.traffic) }}</div>
+                    <div style="color: #10b981; font-weight: 600;">↑ +12% MoM</div>
+                </div>
+
+                <div class="big-metric">
+                    <div class="big-label">Conversions</div>
+                    <div class="big-number">{{ demo.conversions }}</div>
+                    <div style="color: #64748b; font-size: 0.875rem;">{{ demo.conversion_rate }}% conversion rate</div>
+                </div>
+
+                <div class="big-metric">
+                    <div class="big-label">CWV Score</div>
+                    <div class="big-number">{{ demo.cwv_score }}/100</div>
+                    <div style="color: #10b981; font-weight: 600;">✅ Passing</div>
+                </div>
+            </div>
+
+            <!-- Executive Summary -->
+            <div style="background: #f8fafc; padding: 2rem; border-radius: 12px; border-left: 4px solid #3b82f6; margin: 2rem 0;">
+                <h3 style="margin-bottom: 1rem;">📊 Executive Summary</h3>
+                <p style="line-height: 1.8; color: #1e293b;">
+                    Your organic traffic generated <strong>{{ "{:,}".format(demo.traffic) }} visitors</strong> this month, 
+                    resulting in <strong>{{ demo.conversions }} conversions</strong> and 
+                    <strong>${{ "{:,}".format(demo.roi) }} in revenue</strong> ({{ demo.growth }} growth).
+                    Your Core Web Vitals score of <strong>{{ demo.cwv_score }}/100</strong> indicates excellent performance.
+                </p>
+            </div>
+
+            <!-- Top Keywords -->
+            <h3 style="margin: 2rem 0 1rem;">🔑 Top Performing Keywords</h3>
+            <ul class="keyword-list">
+                {% for kw in demo.top_keywords %}
+                <li class="keyword-item">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong style="color: #1e293b; font-size: 1.1rem;">{{ kw.keyword }}</strong>
+                            <div style="color: #64748b; font-size: 0.875rem; margin-top: 0.25rem;">
+                                Position {{ kw.position }} • {{ "{:,}".format(kw.clicks) }} clicks • {{ kw.ctr }}% CTR
+                            </div>
+                        </div>
+                        <div style="text-align: right; color: #10b981; font-weight: bold;">
+                            #{{ loop.index }}
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+
+            <!-- What's Included -->
+            <div style="margin: 3rem 0;">
+                <h3 style="margin-bottom: 1.5rem; text-align: center;">Full Report Includes</h3>
+                <div class="metric-row">
+                    <div style="text-align: center; padding: 1rem;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">📈</div>
+                        <strong>Traffic Trends</strong>
+                        <p style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">30-day charts & analysis</p>
+                    </div>
+                    <div style="text-align: center; padding: 1rem;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">💰</div>
+                        <strong>ROI Tracking</strong>
+                        <p style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">Revenue & conversions</p>
+                    </div>
+                    <div style="text-align: center; padding: 1rem;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚡</div>
+                        <strong>Core Web Vitals</strong>
+                        <p style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">Performance + fixes</p>
+                    </div>
+                    <div style="text-align: center; padding: 1rem;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">📊</div>
+                        <strong>Keyword Rankings</strong>
+                        <p style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">Top 50 tracked</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA -->
+            <div class="cta-section">
+                <h2 style="margin-bottom: 1rem;">Create Your Own Report</h2>
+                <p style="font-size: 1.2rem; opacity: 0.9; margin-bottom: 2rem;">
+                    See your organic traffic → conversions → $revenue in 60 seconds
+                </p>
+                <a href="/test-login" class="btn-primary" style="display: inline-block; padding: 16px 40px; text-decoration: none; font-size: 1.2rem; background: white; color: #3b82f6;">
+                    Start Free Trial
+                </a>
+                <p style="margin-top: 1.5rem; font-size: 0.9rem; opacity: 0.8;">
+                    No credit card required • 1 free report • Connect in 2 clicks
+                </p>
+                <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.2);">
+                    <p style="font-size: 0.9rem; opacity: 0.8;">Starting at $39/mo</p>
+                    <p style="font-size: 0.85rem; opacity: 0.7; margin-top: 0.5rem;">vs. $139 for SEMrush bloat</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer style="background: #1e293b; color: white; padding: 2rem; text-align: center; margin-top: 4rem;">
+        <p>© 2025 ReportRiser • <a href="https://reportriser.com" style="color: #60a5fa;">reportriser.com</a></p>
+        <p style="margin-top: 0.5rem; opacity: 0.7; font-size: 0.875rem;">
+            <a href="/audit" style="color: white; margin: 0 1rem;">Free Audit</a> | 
+            <a href="/demo" style="color: white; margin: 0 1rem;">Demo</a> | 
+            <a href="/test-login" style="color: white; margin: 0 1rem;">Login</a>
+        </p>
+    </footer>
+</body>
+</html>

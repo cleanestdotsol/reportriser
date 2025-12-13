@@ -1,4 +1,12 @@
-from utils.roi_calculator import ROICalculator
+# At the TOP of the file, before any other imports
+import os
+os.environ['MPLCONFIGDIR'] = '/tmp/matplotlib'
+
+# Force matplotlib to use non-GUI backend
+import matplotlib
+matplotlib.use('Agg')
+
+# Now import the rest
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -6,8 +14,10 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Tabl
 from reportlab.lib.units import inch
 import matplotlib.pyplot as plt
 from datetime import datetime
-import os
 import io
+import tempfile
+from utils.roi_calculator import ROICalculator
+
 
 class ReportGenerator:
     

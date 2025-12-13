@@ -3,8 +3,7 @@ import os
 os.environ['MPLCONFIGDIR'] = '/tmp/matplotlib'
 
 # Force matplotlib to use non-GUI backend
-import matplotlib
-matplotlib.use('Agg')
+
 
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors

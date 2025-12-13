@@ -6,17 +6,18 @@ os.environ['MPLCONFIGDIR'] = '/tmp/matplotlib'
 import matplotlib
 matplotlib.use('Agg')
 
-# Now import the rest
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle, PageBreak
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak
 from reportlab.lib.units import inch
-import matplotlib.pyplot as plt
 from datetime import datetime
-import io
+import os
 import tempfile
 from utils.roi_calculator import ROICalculator
+
+# Charts disabled on serverless
+CHARTS_ENABLED = False
 
 
 class ReportGenerator:
@@ -66,67 +67,8 @@ class ReportGenerator:
     
     @staticmethod
     def generate_charts(analytics_data, search_data):
-        charts = {}
-        
-        # Traffic trend chart
-        fig, ax = plt.subplots(figsize=(10, 4))
-        dates = [d['date'][-5:] for d in analytics_data['traffic_data']]
-        users = [d['users'] for d in analytics_data['traffic_data']]
-        
-        ax.plot(dates, users, color='#3b82f6', linewidth=2, marker='o', markersize=4)
-        ax.fill_between(range(len(dates)), users, alpha=0.2, color='#3b82f6')
-        ax.set_title('30-Day Traffic Trend', fontsize=14, fontweight='bold')
-        ax.set_xlabel('Date')
-        ax.set_ylabel('Users')
-        ax.grid(True, alpha=0.3)
-        plt.xticks(range(0, len(dates), 5), dates[::5], rotation=45)
-        plt.tight_layout()
-        
-        buf = io.BytesIO()
-        plt.savefig(buf, format='png', dpi=150, bbox_inches='tight')
-        buf.seek(0)
-        charts['traffic'] = buf
-        plt.close()
-        
-        # Top pages chart
-        fig, ax = plt.subplots(figsize=(10, 5))
-        pages = [p['page'][:30] for p in search_data['top_pages'][:8]]
-        clicks = [p['clicks'] for p in search_data['top_pages'][:8]]
-        
-        bars = ax.barh(pages, clicks, color='#10b981')
-        ax.set_title('Top 8 Pages by Clicks', fontsize=14, fontweight='bold')
-        ax.set_xlabel('Clicks')
-        
-        for i, bar in enumerate(bars):
-            width = bar.get_width()
-            ax.text(width, bar.get_y() + bar.get_height()/2, f' {clicks[i]:,}', 
-                   va='center', fontweight='bold', fontsize=9)
-        
-        plt.tight_layout()
-        buf2 = io.BytesIO()
-        plt.savefig(buf2, format='png', dpi=150, bbox_inches='tight')
-        buf2.seek(0)
-        charts['pages'] = buf2
-        plt.close()
-        
-        # Keyword positions chart
-        fig, ax = plt.subplots(figsize=(10, 4))
-        keywords = [k['keyword'] for k in search_data['top_keywords']]
-        positions = [k['position'] for k in search_data['top_keywords']]
-        
-        ax.barh(keywords, positions, color='#8b5cf6')
-        ax.set_title('Top 5 Keyword Rankings', fontsize=14, fontweight='bold')
-        ax.set_xlabel('Average Position')
-        ax.invert_xaxis()
-        
-        plt.tight_layout()
-        buf3 = io.BytesIO()
-        plt.savefig(buf3, format='png', dpi=150, bbox_inches='tight')
-        buf3.seek(0)
-        charts['keywords'] = buf3
-        plt.close()
-        
-        return charts
+        """Charts disabled for serverless deployment"""
+        return {'traffic': None, 'pages': None, 'keywords': None}
     
     @staticmethod
     def generate_pdf(site_url, analytics_data, search_data, cwv_summary, roi_data, conversions_data, tier):
@@ -257,16 +199,44 @@ class ReportGenerator:
         charts = ReportGenerator.generate_charts(analytics_data, search_data)
         
         story.append(PageBreak())
+        
+        # Traffic Summary (instead of chart)
+        story.append(PageBreak())
         story.append(Paragraph("Traffic Analysis", heading_style))
-        story.append(Image(charts['traffic'], width=6*inch, height=2.4*inch))
-        story.append(Spacer(1, 0.2*inch))
-        
+
+        traffic_summary = f"""
+        Over the past 30 days, your site received <b>{analytics_data['total_users']:,} organic visitors</b>.
+        <br/><br/>
+        <b>Peak traffic day:</b> {max(analytics_data['traffic_data'], key=lambda x: x['users'])['date']} 
+        ({max(analytics_data['traffic_data'], key=lambda x: x['users'])['users']} users)
+        <br/>
+        <b>Average daily visitors:</b> {analytics_data['total_users'] // 30:,}
+        """
+        story.append(Paragraph(traffic_summary, styles['Normal']))
+        story.append(Spacer(1, 0.3*inch))
+
+        # Top Pages Summary (instead of chart)
         story.append(Paragraph("Top Performing Pages", heading_style))
-        story.append(Image(charts['pages'], width=6*inch, height=3*inch))
-        story.append(Spacer(1, 0.2*inch))
-        
-        story.append(Paragraph("Keyword Rankings", heading_style))
-        story.append(Image(charts['keywords'], width=6*inch, height=2.4*inch))
+
+        pages_data = [['Page', 'Clicks', '% of Total']]
+        total_clicks = sum([p['clicks'] for p in search_data['top_pages']])
+        for page in search_data['top_pages'][:10]:
+            percent = round((page['clicks'] / total_clicks * 100), 1)
+            pages_data.append([page['page'], f"{page['clicks']:,}", f"{percent}%"])
+
+        pages_table = Table(pages_data, colWidths=[3.5*inch, 1.5*inch, 1.2*inch])
+        pages_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#3b82f6')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 11),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.lightgrey),
+            ('GRID', (0, 0), (-1, -1), 1, colors.grey)
+        ]))
+
+        story.append(pages_table)
         story.append(Spacer(1, 0.3*inch))
         
         # Keywords table (keep existing)

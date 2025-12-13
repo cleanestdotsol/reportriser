@@ -20,10 +20,17 @@ app.secret_key = os.getenv('FLASK_SECRET_KEY', secrets.token_hex(32))
 
 # Initialize services
 stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
-supabase: Client = create_client(
-    os.getenv('SUPABASE_URL'),
-    os.getenv('SUPABASE_KEY')
-)
+from supabase import create_client, Client
+import os
+
+# Safe reading of env vars with fallbacks for local testing
+supabase_url = os.environ.get("SUPABASE_URL")
+supabase_key = os.environ.get("SUPABASE_ANON_KEY")  # this is correct for anon/public key
+
+if not supabase_url or not supabase_key:
+    raise ValueError("Missing SUPABASE_URL or SUPABASE_ANON_KEY in environment variables")
+
+supabase: Client = create_client(supabase_url, supabase_key)
 
 PRICING = {
     'starter_monthly': {'price_id': os.getenv('STRIPE_STARTER_MONTHLY'), 'amount': 3900},
